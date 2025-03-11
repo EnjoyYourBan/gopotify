@@ -1,4 +1,4 @@
-extends Reference
+extends RefCounted
 
 class_name GopotifyCredentials
 
@@ -14,7 +14,7 @@ func _init(_access_token, _refresh_token, _expires_in, _issued_at):
 	self.issued_at = _issued_at
 
 func is_expired() -> bool:
-	return OS.get_unix_time() > self.issued_at + self.expires_in
+	return Time.get_unix_time_from_system() > self.issued_at + self.expires_in
 
 func _to_string() -> String:
-	return JSON.print({access_token=self.access_token, refresh_token=self.refresh_token, expires_in=self.expires_in, issued_at=self.issued_at})
+	return JSON.stringify({access_token=self.access_token, refresh_token=self.refresh_token, expires_in=self.expires_in, issued_at=self.issued_at})

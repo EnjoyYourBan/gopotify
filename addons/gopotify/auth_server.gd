@@ -6,13 +6,13 @@ const AUTH_ENDPOINT: String = "/callback"
 var _method_regex: RegEx = RegEx.new()
 var _header_regex: RegEx = RegEx.new()
 
-var request_new_credentials: FuncRef
+var request_new_credentials: Callable
 
 var port: int = 8889
 var bind_address: String = "*"
 
 var _clients: Array
-var _server: TCP_Server
+var _server: TCPServer
 
 signal credentials_received
 
@@ -27,9 +27,9 @@ class GopotifyAuthRequest:
 	var query: Dictionary
 
 	func _to_string() -> String:
-		return JSON.print({headers=self.headers, method=self.method, path=self.path, query=self.query})
+		return JSON.stringify({headers=self.headers, method=self.method, path=self.path, query=self.query})
 
-func _init(_request_new_credentials: FuncRef):
+func _init(_request_new_credentials: Callable):
 	self.request_new_credentials = _request_new_credentials
 
 func _ready():
@@ -38,7 +38,7 @@ func _ready():
 	_method_regex.compile("^(?<method>GET|POST|HEAD|PUT|PATCH|DELETE|OPTIONS) (?<path>[^ ]+) HTTP/1.1$")
 	_header_regex.compile("^(?<key>[^:]+): (?<value>.+)$")
 
-	self._server = TCP_Server.new()
+	self._server = TCPServer.new()
 	var err: int = self._server.listen(self.port, self.bind_address)
 
 	match err:
@@ -72,7 +72,7 @@ func _handle_request(client: StreamPeer, request_string: String) -> void:
 	if request.method == "GET" and request.path == AUTH_ENDPOINT:
 		var code = request.query.get("code")
 
-		if yield(self.request_new_credentials.call_func(code), "completed"):
+		if await request_new_credentials.call(code):
 			response.send(200, "<h1>You may close this window</h1>")
 		else:
 			response.send(500, "<h1>Something went wrong</h1>")
@@ -91,7 +91,7 @@ func _build_request_from_string(request_string: String) -> GopotifyAuthRequest:
 			if not "?" in request_path:
 				request.path = request_path
 			else: # parse query parameters
-				var path_query: PoolStringArray = request_path.split("?")
+				var path_query: PackedStringArray = request_path.split("?")
 				request.path = path_query[0]
 				request.query = _extract_query_params(path_query[1])
 			request.headers = {}
@@ -114,7 +114,7 @@ func _extract_query_params(query_string: String) -> Dictionary:
 			continue
 		var kv : Array = param.split("=")
 		var value: String = kv[1]
-		if value.is_valid_integer():
+		if value.is_valid_int():
 			query[kv[0]] = int(value)
 		elif value.is_valid_float():
 			query[kv[0]] = float(value)
