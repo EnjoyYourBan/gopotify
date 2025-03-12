@@ -2,10 +2,8 @@ extends Control
 
 
 func _on_PlayPause_pressed():
-	var player_state = JSON.parse(
-		yield($Gopotify.get_player_state(), "completed").body.get_string_from_ascii()
-	).result
-	if player_state["is_playing"]:
+	var playing = (await $Gopotify.get_player_state()).is_playing
+	if playing:
 		$Gopotify.pause()
 		$CenterContainer/HBoxContainer/PlayPause.text = "|>"
 	else:

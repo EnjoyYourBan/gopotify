@@ -191,7 +191,6 @@ func previous() -> GopotifyResponse:
 func get_player_state() -> GopotifyPlayer:
 	var response = await (self._spotify_request("me/player", HTTPClient.METHOD_GET))
 	var parsed_json = JSON.parse_string(response.body.get_string_from_utf8())
-	if parsed_json.error:
+	if not parsed_json or 'error' in parsed_json:
 		return GopotifyPlayer.new(false)
-	var parsed = parsed_json.result
-	return GopotifyPlayer.new(parsed["is_playing"])
+	return GopotifyPlayer.new(parsed_json["is_playing"])

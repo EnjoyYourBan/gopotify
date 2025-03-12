@@ -1,42 +1,39 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=3 format=3 uid="uid://c67hpk3pmed3s"]
 
-[ext_resource path="res://addons/gopotify/client.gd" type="Script" id=1]
-[ext_resource path="res://example/player.gd" type="Script" id=2]
+[ext_resource type="Script" uid="uid://cy4uqdooshrvn" path="res://addons/gopotify/client.gd" id="1"]
+[ext_resource type="Script" uid="uid://1is2cpgpaxsr" path="res://example/player.gd" id="2"]
 
 [node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-script = ExtResource( 2 )
+script = ExtResource("2")
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer"]
-margin_left = 39.0
-margin_top = 11.0
-margin_right = 130.0
-margin_bottom = 31.0
+layout_mode = 2
 
 [node name="Previous" type="Button" parent="CenterContainer/HBoxContainer"]
-margin_right = 28.0
-margin_bottom = 20.0
+layout_mode = 2
 text = "<<"
 
 [node name="PlayPause" type="Button" parent="CenterContainer/HBoxContainer"]
-margin_left = 32.0
-margin_right = 59.0
-margin_bottom = 20.0
+layout_mode = 2
 text = "|>"
 
 [node name="Next" type="Button" parent="CenterContainer/HBoxContainer"]
-margin_left = 63.0
-margin_right = 91.0
-margin_bottom = 20.0
+layout_mode = 2
 text = ">>"
 
 [node name="Gopotify" type="HTTPRequest" parent="."]
-script = ExtResource( 1 )
+script = ExtResource("1")
+client_id = "9ed880892c6643429a9537b12600a6d6"
+client_secret = "93f16aa122854bb9b908ab54f6a705c2"
 
 [connection signal="pressed" from="CenterContainer/HBoxContainer/Previous" to="." method="_on_Previous_pressed"]
 [connection signal="pressed" from="CenterContainer/HBoxContainer/PlayPause" to="." method="_on_PlayPause_pressed"]
