@@ -18,7 +18,6 @@ var credentials: GopotifyCredentials
 
 var server: GopotifyAuthServer
 
-
 class GopotifyResponse:
 	var status_code: int
 	var headers: PackedStringArray
@@ -170,7 +169,30 @@ func simple_request(method: int, url: String, headers: Array = [], body: String 
 	)
 
 	return await self.request_completed
+	
+func search(query: String, types: Array, offset: int = 0, limit: int = -1) -> GopotifySearchResult:
+	var params = []
+	
+	# Add required query parameters
+	params.append("q=" + query.uri_encode())
+	params.append("type=" + ",".join(types).uri_encode())
 
+	# Add optional parameters only if they are valid
+	if limit > 0:
+		params.append("limit=" + str(limit))
+	if offset > 0:
+		params.append("offset=" + str(offset))
+
+	# Construct the full URL
+	var url = "search?" + "&".join(params)
+
+	# Make the request
+	var result = await self._spotify_request(url, HTTPClient.METHOD_GET)
+	
+	# Parse and return the response
+	return GopotifySearchResult.new(JSON.parse_string(result.body.get_string_from_utf8()), self)
+
+	
 func play(tracks=[]) -> GopotifyResponse:
 	var body = ""
 	if tracks:

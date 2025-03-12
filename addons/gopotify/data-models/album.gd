@@ -8,4 +8,7 @@ var album_type: String
 var available_markets: PackedStringArray
 var href: String
 var uri: String
-var artist
+var artist: GopotifyArtist
+
+func _init() -> void:
+	pass
