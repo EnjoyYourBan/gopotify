@@ -41,8 +41,6 @@ text = "search"
 
 [node name="Gopotify" type="HTTPRequest" parent="."]
 script = ExtResource("1")
-client_id = "9ed880892c6643429a9537b12600a6d6"
-client_secret = "93f16aa122854bb9b908ab54f6a705c2"
 
 [node name="SearchResult" type="ScrollContainer" parent="."]
 layout_mode = 2
