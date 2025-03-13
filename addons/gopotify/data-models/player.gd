@@ -2,6 +2,7 @@ extends RefCounted
 
 class_name GopotifyPlayer
 
+var queue: Array[GopotifyTrack] = []
 var _client: GopotifyClient
 
 var device: GopotifyDevice
@@ -63,3 +64,14 @@ func seek(position_ms: int):
 	self.progress_ms = position_ms
 	var url = "me/player/seek?position_ms={0}&device_id={1}".format([position_ms, device.id])
 	await self._client._spotify_request(url, HTTPClient.METHOD_PUT)
+
+func update_queue() -> Array[GopotifyTrack]:
+	var new_queue: Array[GopotifyTrack] = []
+	
+	var request = await self._client._spotify_request("me/player/queue", HTTPClient.METHOD_GET)
+	var object = JSON.parse_string(request.body.get_string_from_ascii())
+	
+	for track in object["queue"]:
+		new_queue.append(GopotifyTrack.new(track, _client))
+	self.queue = new_queue
+	return self.queue

@@ -236,3 +236,9 @@ func update_player_state() -> GopotifyPlayer:
 		return null
 	self.player = GopotifyPlayer.new(parsed_json, self)
 	return self.player
+
+func get_queue() -> Array[GopotifyTrack]:
+	if not self.player:
+		await self.update_player_state()
+	await self.player.update_queue()
+	return self.player.queue
