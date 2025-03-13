@@ -1,5 +1,5 @@
 extends Control
-
+	
 func _on_PlayPause_pressed() -> void:
 	var playing = (await $Gopotify.get_player_state()).is_playing
 	if playing:
@@ -32,6 +32,6 @@ func _on_search_pressed() -> void:
 		button.connect("pressed", track_play.bind(track))
 		$SearchResult/VBoxContainer.add_child(button)
 
-func track_play(track) -> void:
+func track_play(track: GopotifyTrack) -> void:
 	print("Now playing song: %s" % track)
-	track.play()
+	await track.play()

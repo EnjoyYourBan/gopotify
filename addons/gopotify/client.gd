@@ -18,6 +18,8 @@ var credentials: GopotifyCredentials
 
 var server: GopotifyAuthServer
 
+var player: GopotifyPlayer
+
 class GopotifyResponse:
 	var status_code: int
 	var headers: PackedStringArray
@@ -171,7 +173,7 @@ func simple_request(method: int, url: String, headers: Array = [], body: String 
 	return await self.request_completed
 	
 func search(query: String, types: Array, offset: int = 0, limit: int = -1) -> GopotifySearchResult:
-	var params = []
+	var params = PackedStringArray()
 	
 	# Add required query parameters
 	params.append("q=" + query.uri_encode())
@@ -202,17 +204,31 @@ func play(tracks=[]) -> GopotifyResponse:
 	return await self._spotify_request("me/player/play", HTTPClient.METHOD_PUT, body)
 
 func pause() -> GopotifyResponse:
-	return await (self._spotify_request("me/player/pause", HTTPClient.METHOD_PUT))
+	return await self._spotify_request("me/player/pause", HTTPClient.METHOD_PUT)
 
 func next() -> GopotifyResponse:
-	return await (self._spotify_request("me/player/next", HTTPClient.METHOD_POST))
+	return await self._spotify_request("me/player/next", HTTPClient.METHOD_POST)
 
 func previous() -> GopotifyResponse:
-	return await (self._spotify_request("me/player/previous", HTTPClient.METHOD_POST))
+	return await self._spotify_request("me/player/previous", HTTPClient.METHOD_POST)
 
-func get_player_state() -> GopotifyPlayer:
+#TODO: Fix? returns 404 not found [???] see @ https://developer.spotify.com/documentation/web-api/reference/add-to-queue
+func queue(track: String, device_id: String = &"") -> GopotifyResponse:
+	var params = PackedStringArray()
+
+	params.append("?uri=" + track.uri_encode())
+
+	if device_id != &"":
+		params.append("&device_id=" + device_id.uri_encode())
+
+	var url = "/me/player/queue" + "".join(params)
+	
+	return await self._spotify_request(url, HTTPClient.METHOD_POST)
+	
+func update_player_state() -> GopotifyPlayer:
 	var response = await (self._spotify_request("me/player", HTTPClient.METHOD_GET))
 	var parsed_json = JSON.parse_string(response.body.get_string_from_utf8())
-	if not parsed_json or 'error' in parsed_json:
-		return GopotifyPlayer.new(false)
-	return GopotifyPlayer.new(parsed_json["is_playing"])
+	if not parsed_json or 'error' in parsed_json: # no playback state found
+		return null
+	self.player = GopotifyPlayer.new(parsed_json, self)
+	return self.player

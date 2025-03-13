@@ -24,10 +24,12 @@ After [installing the plugin]() you'll find a new node called `Gopotify`
 
 ## Implemented Functionality
 
-| Function           | Description                                             |
-|--------------------|---------------------------------------------------------|
-| play()             | Resumes music reproduction in the current active device |
-| pause()            | Pauses music reproduction in the current active device  |
-| next()             | Skips to next song                                      |
-| previous()         | Returns to previous song                                |
-| get_player_state() | Returns an object with the player state as a raw json   |
+| Function              | Description                                              |
+|-----------------------|---------------------------------------------------------|
+| play()                | Resumes music reproduction in the current active device |
+| queue()               | Adds a track to the end of the current playing queue    |
+| pause()               | Pauses music reproduction in the current active device  |
+| next()                | Skips to next song                                      |
+| previous()            | Returns to previous song                                |
+| search()              | Search on spotify, returns a `GopotifySearch`           |
+| update_player_state() | Syncs the Gopotify's `player` to  with spotify          |

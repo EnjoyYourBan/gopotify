@@ -34,10 +34,17 @@ func _init(track_object: Dictionary, client: GopotifyClient) -> void:
 	href = track_object["href"]
 	id = track_object["id"]
 	is_local = track_object["is_local"]
-	is_playable = track_object["is_playable"]
+	
+	if track_object.get("is_playable") == null:
+		is_playable = true
+	else:
+		is_playable = track_object["is_playable"]
+		
 	name = track_object["name"]
 	popularity = track_object["popularity"]
-	preview_url = track_object["preview_url"] if track_object["preview_url"] != null else ""
+	if track_object.has("preview_url") and preview_url != "":
+		preview_url = track_object["preview_url"]
+	
 	track_number = track_object["track_number"]
 	type = StringName(track_object["type"])
 	uri = track_object["uri"]
@@ -47,5 +54,8 @@ func _init(track_object: Dictionary, client: GopotifyClient) -> void:
 func _to_string() -> String:
 	return "[%s] %s" % [artists[0].name, name]
 
+func queue():
+	await _client.queue(uri)
+	
 func play():
 	await _client.play([uri])
