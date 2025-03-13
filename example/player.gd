@@ -37,4 +37,4 @@ func _on_search_pressed() -> void:
 
 func track_play(track: GopotifyTrack) -> void:
 	print("Now playing song: %s" % track)
-	await track.queue()
+	await track.play()
