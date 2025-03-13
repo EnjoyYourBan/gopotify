@@ -1,12 +1,16 @@
 extends Control
 	
+	
 func _on_PlayPause_pressed() -> void:
-	var playing = (await $Gopotify.get_player_state()).is_playing
+	if not $Gopotify.player:
+		await $Gopotify.update_player_state()
+		
+	var playing = $Gopotify.player.is_playing
 	if playing:
-		$Gopotify.pause()
+		$Gopotify.player.pause()
 		$CenterContainer/HBoxContainer/PlayPause.text = "|>"
 	else:
-		$Gopotify.play()
+		$Gopotify.player.play()
 		$CenterContainer/HBoxContainer/PlayPause.text = "||"
 
 func _on_Next_pressed() -> void:
@@ -34,4 +38,4 @@ func _on_search_pressed() -> void:
 
 func track_play(track: GopotifyTrack) -> void:
 	print("Now playing song: %s" % track)
-	await track.play()
+	await track.queue()

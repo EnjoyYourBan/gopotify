@@ -28,3 +28,13 @@ func _init(playback_state: Dictionary, client: GopotifyClient):
 
 	# Handle item (track or null for now)
 	item = GopotifyTrack.new(playback_state["item"], self._client) if playback_state.has("item") else null
+	self._client = client
+
+func play():
+	self.is_playing = true
+	self._client.play([], device.id)
+	
+func pause():
+	self.is_playing = false
+	self._client.pause(device.id)
+	

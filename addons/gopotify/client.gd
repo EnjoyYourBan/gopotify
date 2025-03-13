@@ -150,7 +150,6 @@ func _spotify_request(path: String, http_method: int, body: String = "", retries
 		"Content-Length: " + str(len(body))
 	]
 	var url := SPOTIFY_BASE_URL + path
-
 	var raw_response: Array = await self.simple_request(http_method, url, headers, body)
 	var response := GopotifyResponse.new(raw_response[1], raw_response[2], raw_response[3])
 	if self.credentials.is_expired() or response.status_code == 401:
@@ -195,16 +194,21 @@ func search(query: String, types: Array, offset: int = 0, limit: int = -1) -> Go
 	return GopotifySearchResult.new(JSON.parse_string(result.body.get_string_from_utf8()), self)
 
 	
-func play(tracks=[]) -> GopotifyResponse:
+func play(tracks=[], device=null) -> GopotifyResponse:
 	var body = ""
 	if tracks:
 		var json_body = {"uris": tracks}
 		body = JSON.stringify(json_body)
-
-	return await self._spotify_request("me/player/play", HTTPClient.METHOD_PUT, body)
-
-func pause() -> GopotifyResponse:
-	return await self._spotify_request("me/player/pause", HTTPClient.METHOD_PUT)
+	var url = "me/player/play"
+	if device != null:
+		url += "?device_id=" + device.uri_encode()
+	return await self._spotify_request(url, HTTPClient.METHOD_PUT, body)
+	
+func pause(device=null) -> GopotifyResponse:
+	var url : String = "me/player/pause"
+	if device != null:
+		url += "?device_id=" + device.uri_encode()
+	return await self._spotify_request(url, HTTPClient.METHOD_PUT)
 
 func next() -> GopotifyResponse:
 	return await self._spotify_request("me/player/next", HTTPClient.METHOD_POST)
@@ -221,7 +225,7 @@ func queue(track: String, device_id: String = &"") -> GopotifyResponse:
 	if device_id != &"":
 		params.append("&device_id=" + device_id.uri_encode())
 
-	var url = "/me/player/queue" + "".join(params)
+	var url = "me/player/queue" + "".join(params)
 	
 	return await self._spotify_request(url, HTTPClient.METHOD_POST)
 	
