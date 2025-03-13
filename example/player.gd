@@ -1,10 +1,5 @@
 extends Control
-	
-func _ready():
-	if not $Gopotify.player:
-		await $Gopotify.update_player_state()
-		$Gopotify.player.set_volume(30)
-		
+
 func _on_PlayPause_pressed() -> void:
 	if not $Gopotify.player:
 		await $Gopotify.update_player_state()
