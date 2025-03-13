@@ -47,3 +47,9 @@ func repeat(state: String = "track"):
 	self.repeat_state = state
 	var url = "me/player/repeat?state={0}&device_id={1}".format([state, device.id])
 	await self._client._spotify_request(url, HTTPClient.METHOD_PUT)
+
+func set_volume(volume: int):
+	
+	var url = "me/player/volume?volume_percent={0}&device_id={1}".format([volume, device.id])
+	await self._client._spotify_request(url, HTTPClient.METHOD_PUT)
+	self.device.volume_percent = volume
