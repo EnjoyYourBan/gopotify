@@ -31,6 +31,11 @@ func _init(playback_state: Dictionary, client: GopotifyClient):
 	item = GopotifyTrack.new(playback_state["item"], self._client) if playback_state.has("item") else null
 	self._client = client
 
+func skip():
+	if len(queue) > 0:
+		self.item = self.queue.pop_at(0)
+	self._client.next()
+	
 func play():
 	self.is_playing = true
 	self._client.play([], device.id)
@@ -69,9 +74,17 @@ func update_queue() -> Array[GopotifyTrack]:
 	var new_queue: Array[GopotifyTrack] = []
 	
 	var request = await self._client._spotify_request("me/player/queue", HTTPClient.METHOD_GET)
-	var object = JSON.parse_string(request.body.get_string_from_ascii())
+	var object = JSON.parse_string(request.body.get_string_from_utf8())
 	
+	if not object:
+		self.queue.clear()
+		return self.queue
+		
 	for track in object["queue"]:
 		new_queue.append(GopotifyTrack.new(track, _client))
+	if 'now_playing' in object:
+		self.item = GopotifyTrack.new(object["now_playing"], _client)
+		
 	self.queue = new_queue
+	
 	return self.queue

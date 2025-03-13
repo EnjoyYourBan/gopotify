@@ -13,7 +13,9 @@ func _on_PlayPause_pressed() -> void:
 		$CenterContainer/HBoxContainer/PlayPause.text = "||"
 
 func _on_Next_pressed() -> void:
-	$Gopotify.next()
+	if not $Gopotify.player:
+		await $Gopotify.update_player_state()
+	$Gopotify.player.skip()
 
 func _on_Previous_pressed() -> void:
 	$Gopotify.previous()
@@ -36,5 +38,18 @@ func _on_search_pressed() -> void:
 		$SearchResult/VBoxContainer.add_child(button)
 
 func track_play(track: GopotifyTrack) -> void:
-	print("Now playing song: %s" % track)
 	await track.play()
+
+
+func _on_update_queue_pressed() -> void:
+	if not $Gopotify.player:
+		await $Gopotify.update_player_state()
+	for old_label in $Queue/VBoxContainer.get_children():
+		if old_label is Label: old_label.queue_free()
+	var queue = await $Gopotify.player.update_queue()
+	for track in queue:
+		var label = Label.new()
+		label.text = str(track)
+		label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		label.clip_text = true
+		$Queue/VBoxContainer.add_child(label)

@@ -42,7 +42,6 @@ func read_credentials() -> GopotifyCredentials:
 		
 		var parsed = JSON.parse_string(file.get_as_text())
 		file.close()
-		print(parsed)
 		if not 'error' in parsed:
 			return GopotifyCredentials.new(
 				parsed["access_token"],
@@ -240,5 +239,6 @@ func update_player_state() -> GopotifyPlayer:
 func get_queue() -> Array[GopotifyTrack]:
 	if not self.player:
 		await self.update_player_state()
+		
 	await self.player.update_queue()
 	return self.player.queue
