@@ -58,3 +58,8 @@ func toggle_shuffle(state: bool = not self.shuffle_state):
 	self.shuffle_state = state
 	var url = "me/player/shuffle?state={0}&device_id={1}".format([state, device.id])
 	await self._client._spotify_request(url, HTTPClient.METHOD_PUT)
+
+func seek(position_ms: int):
+	self.progress_ms = position_ms
+	var url = "me/player/seek?position_ms={0}&device_id={1}".format([position_ms, device.id])
+	await self._client._spotify_request(url, HTTPClient.METHOD_PUT)
