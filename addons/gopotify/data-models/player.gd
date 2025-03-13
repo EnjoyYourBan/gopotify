@@ -37,4 +37,13 @@ func play():
 func pause():
 	self.is_playing = false
 	self._client.pause(device.id)
-	
+
+# track, context, off
+func repeat(state: String = "track"):
+	# if they repeat, and its already on repeat, just turn it off
+	if state == repeat_state:
+		state = "off"
+		
+	self.repeat_state = state
+	var url = "me/player/repeat?state={0}&device_id={1}".format([state, device.id])
+	await self._client._spotify_request(url, HTTPClient.METHOD_PUT)

@@ -1,6 +1,5 @@
 extends Control
-	
-	
+
 func _on_PlayPause_pressed() -> void:
 	if not $Gopotify.player:
 		await $Gopotify.update_player_state()
